@@ -31,7 +31,7 @@ export const storage = {
     const saved = await prisma.schedule.upsert({
       where: { soundZoneId: schedule.soundZoneId },
       update: {
-        rules: schedule.rules as Prisma.InputJsonValue,
+        rules: JSON.parse(JSON.stringify(schedule.rules)),
         timeZone: schedule.timeZone,
         baselineVolume: schedule.baselineVolume || 8
       },
@@ -39,7 +39,7 @@ export const storage = {
         soundZoneId: schedule.soundZoneId,
         accountId: schedule.accountId || 'default',
         zoneName: 'Zone', // You might want to pass this in
-        rules: schedule.rules as Prisma.InputJsonValue,
+        rules: JSON.parse(JSON.stringify(schedule.rules)),
         timeZone: schedule.timeZone,
         baselineVolume: schedule.baselineVolume || 8
       }
