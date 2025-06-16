@@ -8,7 +8,9 @@ export async function GET(request: NextRequest) {
     const zoneId = searchParams.get('zoneId')
     
     if (zoneId) {
+      console.log('API: Fetching schedule for zone:', zoneId)
       const schedule = await storage.getSchedule(zoneId)
+      console.log('API: Found schedule:', schedule)
       return NextResponse.json({ schedule })
     }
     

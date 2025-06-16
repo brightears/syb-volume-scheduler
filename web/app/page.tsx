@@ -29,6 +29,14 @@ export default function Home() {
 
   useEffect(() => {
     if (selectedZone) {
+      // Reset schedule state immediately when zone changes
+      setSchedule({
+        soundZoneId: selectedZone,
+        rules: [],
+        timeZone: 'Asia/Bangkok',
+        baselineVolume: 8
+      })
+      // Then fetch the actual schedule
       fetchSchedule(selectedZone)
     }
   }, [selectedZone])
@@ -50,8 +58,10 @@ export default function Home() {
 
   const fetchSchedule = async (zoneId: string) => {
     try {
+      console.log('Fetching schedule for zone:', zoneId)
       const response = await fetch(`/api/schedules?zoneId=${zoneId}`)
       const data = await response.json()
+      console.log('Fetched schedule data:', data)
       setSchedule(data.schedule || {
         soundZoneId: zoneId,
         rules: [],
