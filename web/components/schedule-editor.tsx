@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -17,6 +17,12 @@ interface ScheduleEditorProps {
 export function ScheduleEditor({ schedule, onSave, onTest }: ScheduleEditorProps) {
   const [rules, setRules] = useState<VolumeRule[]>(schedule.rules)
   const [baselineVolume, setBaselineVolume] = useState(schedule.baselineVolume || 8)
+
+  // Update local state when schedule prop changes (e.g., when switching zones)
+  useEffect(() => {
+    setRules(schedule.rules)
+    setBaselineVolume(schedule.baselineVolume || 8)
+  }, [schedule])
 
   const addRule = () => {
     const newRule: VolumeRule = {
