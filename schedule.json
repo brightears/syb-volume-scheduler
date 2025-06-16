@@ -1,0 +1,17 @@
+{
+  "soundZoneId": "U291bmRab25lLCwxYzN3NGR0cXkyby9Mb2NhdGlvbiwsMWwzNHpkc3RibHMvQWNjb3VudCwsMThjdHE4b2t4czAv",
+  "rules": [
+    {
+      "from": "12:00",
+      "to": "14:00",
+      "volume": 11
+    },
+    {
+      "from": "22:00",
+      "to": "23:00",
+      "volume": 6
+    }
+  ],
+  "timeZone": "Asia/Bangkok",
+  "baselineVolume": 8
+}

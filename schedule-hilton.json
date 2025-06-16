@@ -1,0 +1,49 @@
+{
+  "soundZoneId": "U291bmRab25lLCwxaDAyZ2k3bHY1cy9Mb2NhdGlvbiwsMW9wM3prbHBjZTgvQWNjb3VudCwsMXN4N242NTZyeTgv",
+  "rules": [
+    {
+      "from": "06:00",
+      "to": "10:00",
+      "volume": 8,
+      "_comment": "Morning - moderate volume"
+    },
+    {
+      "from": "10:00",
+      "to": "12:00",
+      "volume": 10,
+      "_comment": "Late morning - increase volume"
+    },
+    {
+      "from": "12:00",
+      "to": "14:00",
+      "volume": 12,
+      "_comment": "Lunch time - higher volume"
+    },
+    {
+      "from": "14:00",
+      "to": "18:00",
+      "volume": 10,
+      "_comment": "Afternoon - moderate volume"
+    },
+    {
+      "from": "18:00",
+      "to": "22:00",
+      "volume": 11,
+      "_comment": "Evening - dinner time volume"
+    },
+    {
+      "from": "22:00",
+      "to": "23:59",
+      "volume": 9,
+      "_comment": "Late evening - lower volume"
+    },
+    {
+      "from": "00:00",
+      "to": "06:00",
+      "volume": 6,
+      "_comment": "Night time - quiet"
+    }
+  ],
+  "timeZone": "Asia/Bangkok",
+  "baselineVolume": 8
+}
