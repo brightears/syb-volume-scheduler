@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: syb-volume-scheduler
+    env: node
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: SOUNDTRACK_API_TOKEN
+        sync: false
+      - key: SOUNDTRACK_API_URL
+        value: https://api.soundtrackyourbrand.com/v2
+      - key: MOCK_USERS
+        sync: false
