@@ -17,7 +17,7 @@ export const storage = {
     
     return {
       soundZoneId: dbSchedule.soundZoneId,
-      rules: dbSchedule.rules as Schedule['rules'],
+      rules: JSON.parse(JSON.stringify(dbSchedule.rules)) as Schedule['rules'],
       timeZone: dbSchedule.timeZone,
       baselineVolume: dbSchedule.baselineVolume
     }
@@ -47,7 +47,7 @@ export const storage = {
     
     return {
       soundZoneId: saved.soundZoneId,
-      rules: saved.rules as Schedule['rules'],
+      rules: JSON.parse(JSON.stringify(saved.rules)) as Schedule['rules'],
       timeZone: saved.timeZone,
       baselineVolume: saved.baselineVolume
     }
@@ -76,7 +76,7 @@ export const storage = {
     const schedules = await prisma.schedule.findMany()
     return schedules.map(s => ({
       soundZoneId: s.soundZoneId,
-      rules: s.rules as Schedule['rules'],
+      rules: JSON.parse(JSON.stringify(s.rules)) as Schedule['rules'],
       timeZone: s.timeZone,
       baselineVolume: s.baselineVolume
     }))
