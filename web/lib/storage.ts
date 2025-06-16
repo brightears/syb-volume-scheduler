@@ -1,6 +1,5 @@
 import { Schedule } from '@/types'
 import { prisma } from './prisma'
-import { Prisma } from '@prisma/client'
 
 export const storage = {
   getSchedule: async (zoneId: string): Promise<Schedule | null> => {
