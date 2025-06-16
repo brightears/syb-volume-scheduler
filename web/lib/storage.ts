@@ -1,5 +1,6 @@
 import { Schedule } from '@/types'
 import { prisma } from './prisma'
+import { Prisma } from '@prisma/client'
 
 export const storage = {
   getSchedule: async (zoneId: string): Promise<Schedule | null> => {
@@ -16,7 +17,7 @@ export const storage = {
     
     return {
       soundZoneId: dbSchedule.soundZoneId,
-      rules: dbSchedule.rules as any,
+      rules: dbSchedule.rules as Schedule['rules'],
       timeZone: dbSchedule.timeZone,
       baselineVolume: dbSchedule.baselineVolume
     }
@@ -30,7 +31,7 @@ export const storage = {
     const saved = await prisma.schedule.upsert({
       where: { soundZoneId: schedule.soundZoneId },
       update: {
-        rules: schedule.rules as any,
+        rules: schedule.rules as unknown as Prisma.JsonValue,
         timeZone: schedule.timeZone,
         baselineVolume: schedule.baselineVolume || 8
       },
@@ -38,7 +39,7 @@ export const storage = {
         soundZoneId: schedule.soundZoneId,
         accountId: schedule.accountId || 'default',
         zoneName: 'Zone', // You might want to pass this in
-        rules: schedule.rules as any,
+        rules: schedule.rules as unknown as Prisma.JsonValue,
         timeZone: schedule.timeZone,
         baselineVolume: schedule.baselineVolume || 8
       }
@@ -46,7 +47,7 @@ export const storage = {
     
     return {
       soundZoneId: saved.soundZoneId,
-      rules: saved.rules as any,
+      rules: saved.rules as Schedule['rules'],
       timeZone: saved.timeZone,
       baselineVolume: saved.baselineVolume
     }
@@ -75,7 +76,7 @@ export const storage = {
     const schedules = await prisma.schedule.findMany()
     return schedules.map(s => ({
       soundZoneId: s.soundZoneId,
-      rules: s.rules as any,
+      rules: s.rules as Schedule['rules'],
       timeZone: s.timeZone,
       baselineVolume: s.baselineVolume
     }))
