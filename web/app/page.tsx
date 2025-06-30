@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { ScheduleEditor } from '@/components/schedule-editor'
 import { ZoneSelector } from '@/components/zone-selector'
 import { Zone, Schedule } from '@/types'
@@ -8,15 +9,24 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Calendar, LogOut, Loader2 } from 'lucide-react'
 
-// Mock user for MVP
-const MOCK_USER = {
-  email: 'hilton@example.com',
-  accountId: 'QWNjb3VudCwsMXN4N242NTZyeTgv',
-  accountName: 'Hilton Pattaya',
-  role: 'user'
+interface User {
+  id: string
+  email: string
+  name: string | null
+  role: 'admin' | 'client'
+  accountId: string | null
+}
+
+interface Account {
+  id: string
+  name: string
 }
 
 export default function Home() {
+  const router = useRouter()
+  const [user, setUser] = useState<User | null>(null)
+  const [accounts, setAccounts] = useState<Account[]>([])
+  const [currentAccountId, setCurrentAccountId] = useState<string>('')
   const [zones, setZones] = useState<Zone[]>([])
   const [selectedZone, setSelectedZone] = useState<string>('')
   const [schedule, setSchedule] = useState<Schedule | null>(null)
@@ -24,8 +34,14 @@ export default function Home() {
   const [saving, setSaving] = useState(false)
 
   useEffect(() => {
-    fetchZones()
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+    checkAuth()
+  }, [])
+
+  useEffect(() => {
+    if (currentAccountId) {
+      fetchZones()
+    }
+  }, [currentAccountId]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (selectedZone) {
@@ -41,9 +57,45 @@ export default function Home() {
     }
   }, [selectedZone])
 
+  const checkAuth = async () => {
+    const token = localStorage.getItem('auth_token')
+    if (!token) {
+      router.push('/login')
+      return
+    }
+
+    try {
+      const res = await fetch('/api/auth/me', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      })
+
+      if (!res.ok) {
+        router.push('/login')
+        return
+      }
+
+      const data = await res.json()
+      setUser(data.user)
+      setAccounts(data.accounts)
+
+      // Set initial account
+      if (data.user.role === 'client' && data.user.accountId) {
+        setCurrentAccountId(data.user.accountId)
+      } else if (data.accounts.length > 0) {
+        setCurrentAccountId(data.accounts[0].id)
+      }
+    } catch (error) {
+      console.error('Auth check failed:', error)
+      router.push('/login')
+    }
+  }
+
   const fetchZones = async () => {
     try {
-      const response = await fetch(`/api/zones?accountId=${MOCK_USER.accountId}`)
+      const token = localStorage.getItem('auth_token')
+      const response = await fetch(`/api/zones?accountId=${currentAccountId}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      })
       const data = await response.json()
       setZones(data.zones)
       if (data.zones.length > 0 && !selectedZone) {
@@ -76,12 +128,16 @@ export default function Home() {
   const handleSaveSchedule = async (updatedSchedule: Schedule) => {
     setSaving(true)
     try {
+      const token = localStorage.getItem('auth_token')
       const response = await fetch('/api/schedules', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify({
           ...updatedSchedule,
-          accountId: MOCK_USER.accountId
+          accountId: currentAccountId
         })
       })
       
@@ -98,9 +154,13 @@ export default function Home() {
 
   const handleTestVolume = async (volume: number) => {
     try {
+      const token = localStorage.getItem('auth_token')
       await fetch('/api/zones/test-volume', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify({
           zoneId: selectedZone,
           volume
@@ -129,13 +189,43 @@ export default function Home() {
               <Calendar className="h-8 w-8 text-primary" />
               <div>
                 <h1 className="text-2xl font-bold">Volume Scheduler</h1>
-                <p className="text-sm text-muted-foreground">{MOCK_USER.accountName}</p>
+                <p className="text-sm text-muted-foreground">
+                  {user?.role === 'admin' ? 'Admin Dashboard' : accounts.find(a => a.id === currentAccountId)?.name}
+                </p>
               </div>
             </div>
-            <Button variant="outline" size="sm">
-              <LogOut className="h-4 w-4 mr-2" />
-              Sign Out
-            </Button>
+            <div className="flex items-center gap-4">
+              {user?.role === 'admin' && accounts.length > 1 && (
+                <select
+                  value={currentAccountId}
+                  onChange={(e) => {
+                    setCurrentAccountId(e.target.value)
+                    setSelectedZone('')
+                  }}
+                  className="px-3 py-1 border rounded-md"
+                >
+                  {accounts.map(account => (
+                    <option key={account.id} value={account.id}>
+                      {account.name}
+                    </option>
+                  ))}
+                </select>
+              )}
+              <span className="text-sm text-muted-foreground">
+                {user?.name || user?.email}
+              </span>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => {
+                  localStorage.removeItem('auth_token')
+                  router.push('/login')
+                }}
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Sign Out
+              </Button>
+            </div>
           </div>
         </div>
       </header>
