@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { ArrowLeft, Plus, Users, Building2, Loader2 } from 'lucide-react'
+import { ArrowLeft, Plus, Users, Building2, Loader2, UserCog } from 'lucide-react'
 
 interface Account {
   id: string
@@ -233,6 +233,14 @@ export default function AdminPage() {
                     </CardDescription>
                   </div>
                   <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => router.push(`/admin/accounts/${account.id}`)}
+                    >
+                      <UserCog className="h-4 w-4 mr-2" />
+                      Users
+                    </Button>
                     <Button
                       size="sm"
                       onClick={() => {
