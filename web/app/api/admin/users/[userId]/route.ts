@@ -5,8 +5,9 @@ import { prisma } from '@/lib/prisma'
 // DELETE user
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { userId: string } }
+  { params }: { params: Promise<{ userId: string }> }
 ) {
+  const { userId } = await params
   const token = request.headers.get('authorization')?.replace('Bearer ', '')
 
   if (!token) {
@@ -22,7 +23,7 @@ export async function DELETE(
   try {
     // Don't allow deleting admin users
     const targetUser = await prisma.user.findUnique({
-      where: { id: params.userId }
+      where: { id: userId }
     })
 
     if (!targetUser) {
@@ -38,7 +39,7 @@ export async function DELETE(
 
     // Delete user and their sessions
     await prisma.user.delete({
-      where: { id: params.userId }
+      where: { id: userId }
     })
 
     return NextResponse.json({ message: 'User deleted successfully' })

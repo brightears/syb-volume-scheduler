@@ -4,8 +4,9 @@ import { prisma } from '@/lib/prisma'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { accountId: string } }
+  { params }: { params: Promise<{ accountId: string }> }
 ) {
+  const { accountId } = await params
   const token = request.headers.get('authorization')?.replace('Bearer ', '')
 
   if (!token) {
@@ -20,7 +21,7 @@ export async function GET(
 
   try {
     const account = await prisma.account.findUnique({
-      where: { id: params.accountId },
+      where: { id: accountId },
       include: {
         _count: {
           select: {

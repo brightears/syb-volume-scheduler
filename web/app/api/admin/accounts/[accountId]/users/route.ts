@@ -5,8 +5,9 @@ import { prisma } from '@/lib/prisma'
 // GET users for an account
 export async function GET(
   request: NextRequest,
-  { params }: { params: { accountId: string } }
+  { params }: { params: Promise<{ accountId: string }> }
 ) {
+  const { accountId } = await params
   const token = request.headers.get('authorization')?.replace('Bearer ', '')
 
   if (!token) {
@@ -22,7 +23,7 @@ export async function GET(
   try {
     const users = await prisma.user.findMany({
       where: { 
-        accountId: params.accountId,
+        accountId: accountId,
         role: 'client'
       },
       select: {
@@ -50,8 +51,9 @@ export async function GET(
 // POST - Create new user for account
 export async function POST(
   request: NextRequest,
-  { params }: { params: { accountId: string } }
+  { params }: { params: Promise<{ accountId: string }> }
 ) {
+  const { accountId } = await params
   const token = request.headers.get('authorization')?.replace('Bearer ', '')
 
   if (!token) {
@@ -92,7 +94,7 @@ export async function POST(
       password,
       name,
       role: 'client',
-      accountId: params.accountId
+      accountId: accountId
     })
 
     return NextResponse.json({
