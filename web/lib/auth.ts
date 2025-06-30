@@ -1,6 +1,6 @@
 import { prisma } from './prisma'
-import { hash, compare } from 'bcryptjs'
-import { randomBytes } from 'crypto'
+import bcrypt from 'bcryptjs'
+import crypto from 'crypto'
 import { addDays } from 'date-fns'
 
 export interface AuthUser {
@@ -20,7 +20,7 @@ export const auth = {
     role?: 'admin' | 'client'
     accountId?: string
   }) {
-    const hashedPassword = await hash(data.password, 10)
+    const hashedPassword = await bcrypt.hash(data.password, 10)
     
     return prisma.user.create({
       data: {
@@ -44,13 +44,13 @@ export const auth = {
       return null
     }
 
-    const isValid = await compare(password, user.password)
+    const isValid = await bcrypt.compare(password, user.password)
     if (!isValid) {
       return null
     }
 
     // Create session
-    const token = randomBytes(32).toString('hex')
+    const token = crypto.randomBytes(32).toString('hex')
     const expiresAt = addDays(new Date(), 7) // 7 day expiry
 
     await prisma.session.create({

@@ -18,6 +18,8 @@ export default function LoginPage() {
     setError('')
     setLoading(true)
 
+    console.log('Attempting login with:', email)
+
     try {
       const res = await fetch('/api/auth/login', {
         method: 'POST',
@@ -25,7 +27,9 @@ export default function LoginPage() {
         body: JSON.stringify({ email, password })
       })
 
+      console.log('Login response status:', res.status)
       const data = await res.json()
+      console.log('Login response data:', data)
 
       if (!res.ok) {
         setError(data.error || 'Login failed')
@@ -34,10 +38,12 @@ export default function LoginPage() {
 
       // Store token in localStorage
       localStorage.setItem('auth_token', data.token)
+      console.log('Token stored, redirecting...')
       
       // Redirect to dashboard
       router.push('/')
-    } catch {
+    } catch (error) {
+      console.error('Login error:', error)
       setError('An error occurred. Please try again.')
     } finally {
       setLoading(false)
