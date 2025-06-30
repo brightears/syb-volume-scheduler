@@ -35,7 +35,7 @@ export default function Home() {
 
   useEffect(() => {
     checkAuth()
-  }, [])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (currentAccountId) {

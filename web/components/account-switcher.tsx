@@ -28,7 +28,7 @@ export function AccountSwitcher({ currentAccountId, onAccountChange }: AccountSw
 
   useEffect(() => {
     fetchUserAndAccounts()
-  }, [])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchUserAndAccounts = async () => {
     try {

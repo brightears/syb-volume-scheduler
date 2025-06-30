@@ -17,10 +17,10 @@ export async function GET() {
         sessions: sessionCount
       }
     })
-  } catch (error: any) {
+  } catch (error) {
     return NextResponse.json({
       status: 'error',
-      message: error.message,
+      message: error instanceof Error ? error.message : 'Unknown error',
       database: 'failed'
     }, { status: 500 })
   }
