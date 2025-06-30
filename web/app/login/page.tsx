@@ -36,12 +36,13 @@ export default function LoginPage() {
         return
       }
 
-      // Store token in localStorage
+      // Store token in localStorage and cookie
       localStorage.setItem('auth_token', data.token)
+      document.cookie = `auth_token=${data.token}; path=/; max-age=${7 * 24 * 60 * 60}` // 7 days
       console.log('Token stored, redirecting...')
       
-      // Redirect to dashboard
-      router.push('/')
+      // Force a hard navigation to ensure middleware runs
+      window.location.href = '/'
     } catch (error) {
       console.error('Login error:', error)
       setError('An error occurred. Please try again.')
