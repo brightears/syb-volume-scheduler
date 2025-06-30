@@ -13,9 +13,17 @@ interface AccountSwitcherProps {
   onAccountChange: (accountId: string) => void
 }
 
+interface User {
+  id: string
+  email: string
+  name: string | null
+  role: 'admin' | 'client'
+  accountId: string | null
+}
+
 export function AccountSwitcher({ currentAccountId, onAccountChange }: AccountSwitcherProps) {
   const [accounts, setAccounts] = useState<Account[]>([])
-  const [user, setUser] = useState<any>(null)
+  const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
