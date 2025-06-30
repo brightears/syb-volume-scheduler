@@ -48,6 +48,31 @@ export const SET_VOLUME_MUTATION = gql`
 `;
 
 // API helper functions
+
+// Get account information
+export async function getAccountInfo(accountId: string) {
+  try {
+    const query = gql`
+      query GetAccountInfo($accountId: ID!) {
+        account(id: $accountId) {
+          id
+          businessName
+        }
+      }
+    `
+    
+    const response = await soundtrackClient.request<any>(query, { accountId })
+    return response.account ? {
+      id: accountId,
+      name: response.account.businessName,
+      businessName: response.account.businessName
+    } : null
+  } catch (error) {
+    console.error('Failed to fetch account info:', error)
+    return null
+  }
+}
+
 export async function getZonesForAccount(accountId: string) {
   try {
     const data = await soundtrackClient.request<{

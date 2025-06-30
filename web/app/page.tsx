@@ -7,7 +7,7 @@ import { ZoneSelector } from '@/components/zone-selector'
 import { Zone, Schedule } from '@/types'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Calendar, LogOut, Loader2 } from 'lucide-react'
+import { Calendar, LogOut, Loader2, Settings } from 'lucide-react'
 
 interface User {
   id: string
@@ -34,6 +34,12 @@ export default function Home() {
   const [saving, setSaving] = useState(false)
 
   useEffect(() => {
+    // Check if account ID is passed in URL params
+    const urlParams = new URLSearchParams(window.location.search)
+    const accountParam = urlParams.get('account')
+    if (accountParam) {
+      setCurrentAccountId(accountParam)
+    }
     checkAuth()
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -214,6 +220,16 @@ export default function Home() {
               <span className="text-sm text-muted-foreground">
                 {user?.name || user?.email}
               </span>
+              {user?.role === 'admin' && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => router.push('/admin')}
+                >
+                  <Settings className="h-4 w-4 mr-2" />
+                  Admin Panel
+                </Button>
+              )}
               <Button 
                 variant="outline" 
                 size="sm"
