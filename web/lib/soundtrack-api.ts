@@ -61,7 +61,12 @@ export async function getAccountInfo(accountId: string) {
       }
     `
     
-    const response = await soundtrackClient.request<any>(query, { accountId })
+    const response = await soundtrackClient.request<{
+      account: {
+        id: string
+        businessName: string
+      } | null
+    }>(query, { accountId })
     return response.account ? {
       id: accountId,
       name: response.account.businessName,

@@ -20,7 +20,6 @@ interface Account {
 
 export default function AdminPage() {
   const router = useRouter()
-  const [user, setUser] = useState<any>(null)
   const [accounts, setAccounts] = useState<Account[]>([])
   const [loading, setLoading] = useState(true)
   const [showAddAccount, setShowAddAccount] = useState(false)
@@ -57,7 +56,6 @@ export default function AdminPage() {
         return
       }
 
-      setUser(data.user)
       fetchAccounts()
     } catch (error) {
       console.error('Auth check failed:', error)
@@ -114,7 +112,7 @@ export default function AdminPage() {
       setNewAccountId('')
       setShowAddAccount(false)
       fetchAccounts()
-    } catch (error) {
+    } catch {
       setError('An error occurred while adding the account')
     } finally {
       setImporting(false)
