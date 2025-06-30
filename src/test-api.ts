@@ -56,7 +56,7 @@ const GET_ZONE_VOLUME_QUERY = gql`
 async function testConnection(accountId: string = 'QWNjb3VudCwsMThjdHE4b2t4czAv') {
   console.log('🔌 Testing Soundtrack API connection...');
   console.log(`📡 API URL: ${API_URL}`);
-  console.log(`🔑 Token: ${API_TOKEN.substring(0, 20)}...`);
+  console.log(`🔑 Token: ${API_TOKEN!.substring(0, 20)}...`);
   console.log(`🏢 Account ID: ${accountId}`);
   
   try {

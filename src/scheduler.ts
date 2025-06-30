@@ -30,14 +30,6 @@ const SET_VOLUME_MUTATION = gql`
 
 // Note: The volume field might not be directly queryable
 // We'll handle this gracefully and rely on tracking after setVolume calls
-const GET_CURRENT_VOLUME_QUERY = gql`
-  query GetCurrentVolume($soundZone: ID!) {
-    soundZone(id: $soundZone) {
-      id
-      name
-    }
-  }
-`;
 
 let config: ScheduleConfig;
 let currentVolume: number | null = null;
@@ -57,7 +49,7 @@ async function loadConfig(): Promise<ScheduleConfig> {
   }
 }
 
-async function getCurrentVolume(soundZoneId: string): Promise<number | null> {
+async function getCurrentVolume(_soundZoneId: string): Promise<number | null> {
   // Since volume might not be directly queryable, we'll return null
   // and rely on tracking volume after setVolume calls
   console.log('ℹ️  Note: Current volume query not available, will track after first volume change');

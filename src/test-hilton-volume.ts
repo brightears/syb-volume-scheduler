@@ -15,7 +15,7 @@ const client = new GraphQLClient(API_URL, {
   },
 });
 
-const zones = {
+const zones: Record<string, { name: string; id: string }> = {
   'drift': {
     name: 'Drift Bar',
     id: 'U291bmRab25lLCwxaDAyZ2k3bHY1cy9Mb2NhdGlvbiwsMW9wM3prbHBjZTgvQWNjb3VudCwsMXN4N242NTZyeTgv'
