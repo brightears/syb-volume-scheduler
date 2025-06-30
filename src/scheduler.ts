@@ -3,7 +3,7 @@ import { GraphQLClient, gql } from 'graphql-request';
 import * as schedule from 'node-schedule';
 import { readFileSync } from 'fs';
 import { join } from 'path';
-import { toZonedTime } from 'date-fns-tz';
+import { utcToZonedTime } from 'date-fns-tz';
 import { ScheduleConfig, ScheduleConfigSchema, VolumeRule } from './types';
 
 const API_URL = process.env.SYB_API_URL || 'https://api.soundtrackyourbrand.com/v2';
@@ -120,7 +120,7 @@ function getActiveRule(rules: VolumeRule[], now: Date): VolumeRule | null {
 
 async function checkAndUpdateVolume() {
   const now = new Date();
-  const zonedNow = toZonedTime(now, config.timeZone);
+  const zonedNow = utcToZonedTime(now, config.timeZone);
   
   const activeRule = getActiveRule(config.rules, zonedNow);
   const targetVolume = activeRule ? activeRule.volume : (config.baselineVolume ?? 8);

@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import { GraphQLClient, gql } from 'graphql-request';
 import * as schedule from 'node-schedule';
-import { toZonedTime } from 'date-fns-tz';
+import { utcToZonedTime } from 'date-fns-tz';
 import { PrismaClient } from '@prisma/client';
 import { VolumeRule } from './types';
 
@@ -33,14 +33,7 @@ const SET_VOLUME_MUTATION = gql`
   }
 `;
 
-interface ScheduleRecord {
-  soundZoneId: string;
-  zoneName: string;
-  rules: any; // JSON field from database
-  timeZone: string;
-  baselineVolume: number;
-  isActive: boolean;
-}
+// Removed unused interface
 
 // Track current volumes per zone
 const currentVolumes = new Map<string, number>();
@@ -115,7 +108,7 @@ async function checkAndUpdateVolumes() {
 
     for (const schedule of schedules) {
       const now = new Date();
-      const zonedNow = toZonedTime(now, schedule.timeZone);
+      const zonedNow = utcToZonedTime(now, schedule.timeZone);
       
       // Parse rules from JSON
       const rules = schedule.rules as VolumeRule[];
