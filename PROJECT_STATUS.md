@@ -1,11 +1,12 @@
 # SYB Volume Scheduler - Project Status & Continuation Guide
 
 ## Project Overview
-A web-based volume scheduler for Soundtrack Your Brand (SYB) that automatically adjusts music volume levels based on time-based rules. Built for hotels to manage their sound zones with different volume levels throughout the day.
+A multi-tenant SaaS platform for Soundtrack Your Brand (SYB) clients that automatically adjusts music volume levels based on time-based rules. Built as a commercial service where hotels and businesses can manage their sound zones with automated volume scheduling.
 
-## Current Status (Last Updated: 2025-06-16)
-✅ **DEPLOYED & WORKING**: Web interface is live on Render with PostgreSQL database
-⏳ **PENDING**: Background scheduler service to execute volume changes
+## Current Status (Last Updated: 2025-06-30)
+✅ **FULLY DEPLOYED**: Complete multi-tenant SaaS platform with authentication
+✅ **BACKGROUND SCHEDULER**: Running and executing volume changes
+✅ **MULTI-TENANT**: Admin and client portals with role-based access
 
 ## Architecture
 ```
@@ -58,50 +59,83 @@ model Schedule {
 ```
 
 ## What's Working
+
+### Core Features
 1. ✅ Web UI deployed and accessible on Render
 2. ✅ PostgreSQL database connected ($7/month plan)
-3. ✅ Zone selection - loads Hilton Pattaya zones via GraphQL
-4. ✅ Schedule editor - create time-based volume rules (0-16)
-5. ✅ Persistent storage - schedules save to database
-6. ✅ Zone-specific schedules (each zone has independent rules)
-7. ✅ Mock authentication (hardcoded to Hilton Pattaya)
+3. ✅ Background scheduler running continuously
+4. ✅ Zone selection - loads zones dynamically via GraphQL
+5. ✅ Schedule editor - create time-based volume rules (0-16)
+6. ✅ Persistent storage - schedules save to database
+7. ✅ Zone-specific schedules (each zone has independent rules)
 8. ✅ Visual timeline showing volume changes throughout the day
+9. ✅ Automatic volume adjustments every minute
 
-## Recent Bug Fixes
-- **Fixed**: Schedule rules weren't updating when switching zones
-- **Solution**: Added `useEffect` in `schedule-editor.tsx` to sync state with props
-- **Fixed**: TypeScript/Prisma JSON type conversion errors
-- **Solution**: Used `JSON.parse(JSON.stringify())` for type safety
+### Authentication & Multi-Tenancy
+10. ✅ Full authentication system with sessions
+11. ✅ Role-based access control (Admin vs Client)
+12. ✅ Admin panel for managing multiple accounts
+13. ✅ Client users restricted to their own account
+14. ✅ Account switching for admins
+15. ✅ User management system
 
-## TODO List (Priority Order)
+### Admin Features
+16. ✅ Add new client accounts by Soundtrack ID
+17. ✅ Automatic account info import from SYB API
+18. ✅ Create/manage users for each account
+19. ✅ Password generation and management
+20. ✅ View all accounts and their statistics
 
-### 1. Deploy Background Scheduler Service (HIGH PRIORITY)
-The actual volume changing logic exists but isn't running. Need to:
-- Create new Render background worker service
-- Deploy `/src/scheduler.ts` 
-- Set up to run continuously
-- Connect to same PostgreSQL database
-- Will read schedules and execute volume changes via GraphQL
+## Architecture Overview
 
-### 2. Implement Real Authentication (HIGH)
-Currently using mock auth. Need to:
-- Add proper login system
-- Link users to specific hotel accounts
-- Implement session management
-- Add user management to database schema
+### Services on Render
+1. **Web Service** (`syb-volume-scheduler-web`)
+   - Next.js 15 application
+   - Handles UI, authentication, API
+   - Connected to PostgreSQL
 
-### 3. Create Admin Dashboard (MEDIUM)
-For managing multiple hotels:
-- View all accounts and their schedules
-- Create new hotel accounts
-- Assign zones to accounts
-- Monitor scheduler status
+2. **Background Worker** (`syb-volume-scheduler-worker`)
+   - Node.js scheduler service
+   - Reads schedules from database
+   - Executes volume changes via SYB API
+   - Runs every minute
 
-### 4. Additional Features (LOW)
-- Email notifications for schedule changes
-- Schedule templates (breakfast, lunch, dinner presets)
-- Volume change history/logs
-- API for external integrations
+3. **PostgreSQL Database** (`syb-scheduler-db`)
+   - Stores accounts, users, schedules
+   - $7/month starter plan
+
+## User Roles & Access
+
+### Admin Users (Your Team)
+- Email: admin@syb.com / Password: admin123
+- Can access all client accounts
+- Can create new accounts and users
+- Can switch between accounts
+- Full system visibility
+
+### Client Users (Hotels/Businesses)
+- Created by admins per account
+- Can only see their assigned account
+- Can manage schedules for their zones
+- No access to other accounts
+- Clean, focused interface
+
+## How to Onboard New Clients
+
+1. **Add Account** (Admin Panel)
+   - Enter Soundtrack account ID
+   - System fetches account info
+   - Creates account in database
+
+2. **Create Users** (Account → Users)
+   - Enter client email
+   - Generate secure password
+   - System creates login credentials
+
+3. **Share Access**
+   - Login URL: https://syb-volume-scheduler.onrender.com/login
+   - Email & password you created
+   - Client can now manage their schedules
 
 ## Quick Development Guide
 
@@ -153,16 +187,54 @@ git push origin main
 ### Issue: Schedules not changing zones
 **Solution**: Already fixed - useEffect in schedule-editor.tsx syncs with prop changes
 
-## Next Session Starting Point
-**IMMEDIATE TASK**: Deploy the background scheduler service
-1. Create new Render background worker
-2. Point to `/src/scheduler.ts`
-3. Set same environment variables as web service
-4. Verify it's reading schedules and changing volumes
+## Business Model & Pricing Considerations
 
-This will complete the MVP - hotels can set schedules via web UI, and the scheduler will automatically adjust volumes!
+### Current Capabilities
+- Multi-tenant architecture ready for SaaS
+- Account isolation and security
+- User management per account
+- Scalable to hundreds of accounts
+
+### Suggested Pricing Models
+1. **Per Location**: $10-25/month per location
+2. **Per Zone**: $5/month per zone
+3. **Tiered**: Basic (5 zones), Pro (20 zones), Enterprise (unlimited)
+4. **Usage-based**: Free up to X schedule changes/month
+
+### Next Commercial Features
+1. Stripe integration for payments
+2. Trial periods and account expiration
+3. Usage analytics and reporting
+4. White-label options
+5. API access for enterprise clients
+
+## Technical Details
+
+### Environment Variables (Set in Render)
+```
+# Web Service & Worker
+DATABASE_URL=<from Render PostgreSQL>
+SOUNDTRACK_API_TOKEN=<your SYB API token>
+SOUNDTRACK_API_URL=https://api.soundtrackyourbrand.com/v2
+NODE_ENV=production
+```
+
+### Key Files
+- `/web/app/page.tsx` - Main dashboard
+- `/web/app/admin/page.tsx` - Admin panel
+- `/web/app/login/page.tsx` - Login page
+- `/web/lib/auth.ts` - Authentication logic
+- `/src/scheduler-db.ts` - Background scheduler
+- `/web/prisma/schema.prisma` - Database schema
+
+### Database Schema
+- **Account**: Client accounts (hotels)
+- **User**: Login credentials
+- **Schedule**: Volume schedules per zone
+- **Session**: Active user sessions
 
 ## Contact & Resources
-- SYB API Docs: [Internal documentation provided]
-- Render Dashboard: [Check user's Render account]
-- GraphQL Endpoint: https://api.soundtrackyourbrand.com/v2
+- SYB API Endpoint: https://api.soundtrackyourbrand.com/v2
+- Render Dashboard: https://dashboard.render.com
+- GitHub Repo: https://github.com/brightears/syb-volume-scheduler
+- Live App: https://syb-volume-scheduler.onrender.com
